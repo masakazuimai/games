@@ -173,7 +173,8 @@ function setBusy(busy) {
   el.askInput.disabled = busy
 }
 
-function setMode(mode) {
+/** focus:false は、ユーザーが操作していない場面で画面が勝手に飛ぶのを防ぐため。 */
+function setMode(mode, { focus = true } = {}) {
   state.mode = mode
   const isAnswer = mode === "answer"
   el.promptMark.textContent = isAnswer ? "A>" : "Q>"
@@ -181,7 +182,7 @@ function setMode(mode) {
   el.askInput.placeholder = isAnswer
     ? "真相を自分の言葉で書いてください（/cancel で質問に戻る）"
     : "はい／いいえで答えられる質問を入力（/help でコマンド一覧）"
-  el.askInput.focus()
+  if (focus) el.askInput.focus()
 }
 
 /* ---------------- 問題リスト ---------------- */
@@ -266,10 +267,28 @@ function renderCaseList() {
   })
 }
 
+/** ジャンルを切り替えたら解答中の問題は破棄し、ターミナルを初期状態へ戻す。 */
+function resetTerminal(genre) {
+  state.puzzle = null
+  state.questions = 0
+  state.hintsUsed = 0
+  state.finished = false
+  setMode("question", { focus: false })
+  updateMeters()
+
+  el.termTitle.textContent = "/games/lateral-thinking"
+  el.log.innerHTML = ""
+  print(`&gt; switched to ${escapeHtml(genre.code)}. ${genre.puzzles.length} cases loaded.`, "sys")
+  print("上の CASE FILES から問題を選んでください。", "sys")
+  printGap()
+}
+
 function switchGenre(genreId) {
+  if (genreId === state.genre) return
   state.genre = genreId
   syncGenreTabs()
   renderLevelFilter()
+  resetTerminal(findGenre(genreId))
   renderCaseList()
 }
 
@@ -709,7 +728,7 @@ async function boot() {
   )
   print("判定は「はい／いいえ／関係ありません」の3種類です。/help でコマンド一覧。", "sys")
   printGap()
-  el.askInput.focus()
+  // 起動時は入力欄にフォーカスしない（ページ先頭からターミナルまで勝手にスクロールするため）
 }
 
 boot()
