@@ -9,8 +9,8 @@ import {
   countByLevel,
   findGenre,
   totalPuzzleCount,
-} from "./puzzles.js?v=20260806p"
-import { AI_PROVIDERS, callAI } from "./ai.js?v=20260806p"
+} from "./puzzles.js?v=20260809a"
+import { AI_PROVIDERS, callAI } from "./ai.js?v=20260809a"
 import {
   buildAiPrompt,
   checkSolution,
@@ -18,7 +18,13 @@ import {
   parseAiVerdict,
   verdictClass,
   verdictLabel,
-} from "./engine.js?v=20260806p"
+} from "./engine.js?v=20260809a"
+import {
+  currentStreak,
+  dailyCase,
+  dailyResultFor,
+  recordDailyClear,
+} from "./daily.js?v=20260809a"
 
 const STORAGE_KEYS = {
   progress: "lateral-thinking:progress",
@@ -50,6 +56,12 @@ const el = {
   genreTabs: document.getElementById("genreTabs"),
   levelFilter: document.getElementById("levelFilter"),
   caseEmpty: document.getElementById("caseEmpty"),
+  dailyBanner: document.getElementById("dailyBanner"),
+  dailyMeta: document.getElementById("dailyMeta"),
+  dailyTitle: document.getElementById("dailyTitle"),
+  dailyStreak: document.getElementById("dailyStreak"),
+  dailyBtn: document.getElementById("dailyBtn"),
+  terminal: document.getElementById("terminal"),
 }
 
 const state = {
@@ -62,7 +74,11 @@ const state = {
   mode: "question",
   finished: false,
   busy: false,
+  isDaily: false, // 解答中の問題が「今日の1問」と同一か
 }
+
+// 今日の1問。日付から決まるので起動時に一度だけ引く
+let today = dailyCase()
 
 let progress = readJson(STORAGE_KEYS.progress, {})
 let settings = readJson(STORAGE_KEYS.settings, { provider: "off" })
@@ -185,6 +201,67 @@ function setMode(mode, { focus = true } = {}) {
   if (focus) el.askInput.focus()
 }
 
+/* ---------------- 今日の1問 ---------------- */
+
+const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"]
+
+/** dateKey は既にJSTの暦日なので、曜日はUTCとして読む（ローカル時差でずらさない）。 */
+function formatDailyDate(dateKey) {
+  const [year, month, day] = dateKey.split("-").map(Number)
+  const weekday = WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()]
+  return `${month}/${day}(${weekday})`
+}
+
+function dailySerial() {
+  return `#${String(today.serial).padStart(3, "0")}`
+}
+
+function renderDailyBanner() {
+  const result = dailyResultFor(today.dateKey)
+  const streak = currentStreak(today.dateKey)
+
+  // 狭い画面で折り返しても意味が崩れないよう、区切りはCSSに任せて単位ごとにspanで包む。
+  // ジャンルと★は同じ単位にして、★だけが行頭に取り残されるのを防ぐ
+  el.dailyMeta.innerHTML = ""
+  const units = [
+    formatDailyDate(today.dateKey),
+    dailySerial(),
+    `${today.genre.label} ${"★".repeat(today.puzzle.level)}`,
+  ]
+  units.forEach((text) => {
+    const unit = document.createElement("span")
+    unit.textContent = text
+    el.dailyMeta.appendChild(unit)
+  })
+
+  el.dailyTitle.textContent = result?.cleared
+    ? `${today.puzzle.title} ✓ 質問${result.questions}回 / ヒント${result.hints}回`
+    : today.puzzle.title
+
+  el.dailyBanner.classList.toggle("is-cleared", Boolean(result?.cleared))
+  el.dailyBtn.textContent = result?.cleared ? "もう一度挑戦" : "挑戦する"
+
+  el.dailyStreak.hidden = streak < 1
+  el.dailyStreak.textContent = `🔥 ${streak}日連続`
+}
+
+el.dailyBtn.addEventListener("click", () => {
+  if (state.busy) return
+  // 選んだ問題が一覧に見えていないと迷子になるため、一覧も今日のジャンルへ寄せる
+  if (state.genre !== today.genre.id) {
+    state.genre = today.genre.id
+    syncGenreTabs()
+  }
+  state.level = null
+  renderLevelFilter()
+  selectPuzzle(today.puzzle, today.genre)
+  window.gtag?.("event", "daily_start", {
+    puzzle_id: today.puzzle.id,
+    genre: today.genre.id,
+    daily_serial: today.serial,
+  })
+})
+
 /* ---------------- 問題リスト ---------------- */
 
 /** ジャンルタブを GENRES から生成する。ジャンル追加時にHTMLを触らずに済む。 */
@@ -273,6 +350,7 @@ function resetTerminal(genre) {
   state.questions = 0
   state.hintsUsed = 0
   state.finished = false
+  state.isDaily = false
   setMode("question", { focus: false })
   updateMeters()
 
@@ -297,6 +375,8 @@ function switchGenre(genreId) {
 async function selectPuzzle(puzzle, genre) {
   state.puzzle = puzzle
   state.playingGenre = genre
+  // 一覧から選んでも今日の1問と同じなら、デイリー扱いにする（入口で結果を変えない）
+  state.isDaily = puzzle.id === today.puzzle.id
   state.questions = 0
   state.hintsUsed = 0
   state.finished = false
@@ -430,6 +510,18 @@ async function finishPuzzle(cleared) {
   writeJson(STORAGE_KEYS.progress, progress)
   renderCaseList()
 
+  // 今日の1問のクリアだけが連続日数に加算される（降参・過去問は対象外）
+  let dailyInfo = null
+  if (cleared && state.isDaily) {
+    dailyInfo = recordDailyClear({
+      dateKey: today.dateKey,
+      puzzleId: today.puzzle.id,
+      questions: state.questions,
+      hints: state.hintsUsed,
+    })
+    renderDailyBanner()
+  }
+
   if (cleared) {
     await typeLine("*** SOLVED ***", "solved", 40)
   }
@@ -444,6 +536,12 @@ async function finishPuzzle(cleared) {
       : `真相を開示しました — 質問 ${state.questions}回 / ヒント ${state.hintsUsed}回`,
     "result"
   )
+  if (dailyInfo?.isNew) {
+    print(
+      `今日の1問 ${dailySerial()} をクリア — 🔥 ${dailyInfo.streak}日連続（最高 ${dailyInfo.best}日）`,
+      "daily-result"
+    )
+  }
   if (cleared) renderShareRow()
   print("上のCASE FILESから次の問題を選べます。", "sys")
   printGap()
@@ -454,6 +552,15 @@ async function finishPuzzle(cleared) {
     questions: state.questions,
     hints: state.hintsUsed,
   })
+  if (dailyInfo?.isNew) {
+    window.gtag?.("event", "daily_clear", {
+      puzzle_id: today.puzzle.id,
+      daily_serial: today.serial,
+      streak: dailyInfo.streak,
+      questions: state.questions,
+      hints: state.hintsUsed,
+    })
+  }
 }
 
 /* ---------------- クリア時のシェア ---------------- */
@@ -466,11 +573,18 @@ function shareUrl() {
 /** 真相は絶対に含めない。問題名とスコアだけを載せる。 */
 function shareText() {
   const stars = "★".repeat(state.puzzle.level)
-  return [
-    `水平思考クイズ「${state.puzzle.title}」${stars} を解きました`,
-    `質問${state.questions}回 / ヒント${state.hintsUsed}回`,
-    "#ウミガメのスープ #水平思考クイズ #脳トレ",
-  ].join("\n")
+  const lines = [`水平思考クイズ「${state.puzzle.title}」${stars} を解きました`]
+
+  if (state.isDaily) {
+    lines.push(`今日の1問 ${dailySerial()} / 質問${state.questions}回 / ヒント${state.hintsUsed}回`)
+    const streak = currentStreak(today.dateKey)
+    if (streak >= 2) lines.push(`🔥 ${streak}日連続`)
+  } else {
+    lines.push(`質問${state.questions}回 / ヒント${state.hintsUsed}回`)
+  }
+
+  lines.push("#ウミガメのスープ #水平思考クイズ #脳トレ")
+  return lines.join("\n")
 }
 
 function renderShareRow() {
@@ -710,15 +824,28 @@ function fillPuzzleCounts(total) {
   })
 }
 
+/**
+ * ホーム画面から起動されたか（PWAとして使われているか）を計測する。
+ * iOSは display-mode を返さない場合があるので navigator.standalone も見る。
+ */
+function reportDisplayMode() {
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  window.gtag?.("event", "app_display_mode", { mode: standalone ? "standalone" : "browser" })
+}
+
 async function boot() {
   const total = totalPuzzleCount()
   fillPuzzleCounts(total)
   renderProviderOptions()
   updateMeters()
   updateAiBadge()
+  renderDailyBanner()
   renderGenreTabs()
   renderLevelFilter()
   renderCaseList()
+  reportDisplayMode()
 
   await typeLine("> connecting to host ...", "sys", 18)
   await typeLine(`> handshake complete. ${total} cases available.`, "sys", 12)

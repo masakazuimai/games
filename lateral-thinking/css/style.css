@@ -113,6 +113,84 @@ a:hover { color: var(--amber-bright); }
 }
 .lead strong { color: var(--text); font-weight: 500; }
 
+/* ---------- 今日の1問 ---------- */
+.daily {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  margin-bottom: 20px;
+  padding: 14px 18px;
+  background: linear-gradient(90deg, rgba(231, 197, 154, 0.1), rgba(231, 197, 154, 0.02));
+  border: 1px solid var(--border-bright);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+}
+.daily-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.daily-label {
+  font-size: 16px;
+  letter-spacing: 0.16em;
+  color: var(--amber);
+}
+.daily-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  color: var(--text-faint);
+}
+.daily-meta > span { white-space: nowrap; }
+.daily-meta > span:not(:last-child)::after { content: " /"; }
+.daily-title {
+  font-size: 16px;
+  color: var(--text);
+}
+.daily-side {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+.daily-streak {
+  font-size: 16px;
+  color: var(--amber-bright);
+  white-space: nowrap;
+}
+/* display を持つ要素の隣で hidden を使うため、UAスタイルを明示的に補強する */
+.daily-streak[hidden] { display: none; }
+.daily-btn {
+  appearance: none;
+  cursor: pointer;
+  flex: none;
+  background: var(--amber);
+  color: #16120c;
+  border: none;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 8px 20px;
+  transition: background 0.15s;
+}
+.daily-btn:hover { background: var(--amber-bright); }
+
+/* クリア済みは緑に寄せて「今日はもう終わった」ことを一目で分かるようにする */
+.daily.is-cleared { border-left-color: var(--yes); }
+.daily.is-cleared .daily-label { color: var(--yes); }
+.daily.is-cleared .daily-btn {
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  color: var(--text-dim);
+  font-weight: 400;
+}
+.daily.is-cleared .daily-btn:hover { color: var(--amber); border-color: var(--amber); }
+
 /* ---------- ジャンルタブ ---------- */
 /* ジャンルが増えても自動で段が増えるようグリッドで組む（flexだと横に溢れる） */
 .tabs {
@@ -381,6 +459,12 @@ a:hover { color: var(--amber-bright); }
   color: var(--text-dim);
 }
 .result b { color: var(--amber-bright); font-weight: 700; }
+
+/* 今日の1問をクリアしたときの連続日数 */
+.daily-result {
+  margin: 0 0 10px;
+  color: var(--amber-bright);
+}
 
 /* クリア時のシェア */
 .share-row {
@@ -652,6 +736,9 @@ footer {
   .term-title { display: none; }
   .term-meta { gap: 10px; margin-left: auto; }
   .send { padding: 7px 14px; }
+  /* 今日の1問は縦積みにして、ボタンを横幅いっぱいの押しやすいタップ領域にする */
+  .daily-side { width: 100%; margin-left: 0; }
+  .daily-btn { flex: 1 1 auto; }
 }
 
 /* ---------- モーション配慮 ---------- */

@@ -75,6 +75,16 @@
           "@type": "Question",
           "name": "AIやアカウント登録は必要ですか？",
           "acceptedAnswer": { "@type": "Answer", "text": "不要です。判定は問題ごとに用意された判定表でおこなうため、AIをオフのままでも最後まで遊べます。より自由な質問に答えさせたい場合のみ、任意でAI判定を有効にできます。" }
+        },
+        {
+          "@type": "Question",
+          "name": "毎日1問だけ遊べますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "「今日の1問」として日替わりの問題を用意しています。全ジャンルから日付ごとに1問が選ばれ、誰が開いても同じ日には同じ問題が出ます。連続してクリアした日数も記録されます。もちろん、それとは別に68問すべてを好きな順番で遊べます。" }
+        },
+        {
+          "@type": "Question",
+          "name": "オフラインでも遊べますか？",
+          "acceptedAnswer": { "@type": "Answer", "text": "遊べます。一度読み込んだあとにホーム画面へ追加すると、アプリのように起動でき、インターネットに接続していない状態でも問題を解けます。iPhone・iPadはSafariの共有ボタンから「ホーム画面に追加」、Android・PCはブラウザのメニューから「インストール」を選んでください。" }
         }
       ]
     }
@@ -95,7 +105,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="css/style.css?v=20260806p">
+<link rel="stylesheet" href="css/style.css?v=20260809a">
+
+<!-- PWA（ホーム画面に追加してオフラインで遊べるようにする） -->
+<link rel="manifest" href="manifest.json?v=20260809a">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<!-- 旧iOS Safari は mobile-web-app-capable を見ないので両方置く -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ウミガメのスープ">
+<!-- iOSはmanifestのiconsではなくこちらを参照する -->
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20260809a">
+<link rel="icon" href="assets/icon-192.png?v=20260809a" type="image/png">
 </head>
 <body>
 <div class="wrap">
@@ -110,6 +132,19 @@
     収録している<span data-puzzle-count>68</span>問は<strong>すべて書き下ろしのオリジナル問題</strong>です（有名な問題の転載は含みません）。
     <strong>通常編</strong>のほか、実務で起きるトラブルを題材にした<strong>エンジニア編・デザイナー編・動画編集者編</strong>があり、難易度でも絞り込めます。登録・インストールは不要です。
   </p>
+
+  <!-- 今日の1問。中身は js/daily.js が日付から決めて流し込む -->
+  <section class="daily" id="dailyBanner" aria-label="今日の1問">
+    <div class="daily-main">
+      <span class="daily-label">TODAY'S CASE</span>
+      <span class="daily-meta" id="dailyMeta"></span>
+      <span class="daily-title" id="dailyTitle"></span>
+    </div>
+    <div class="daily-side">
+      <span class="daily-streak" id="dailyStreak" hidden></span>
+      <button type="button" class="daily-btn" id="dailyBtn">挑戦する</button>
+    </div>
+  </section>
 
   <!-- ジャンルタブは js/puzzles.js の GENRES から生成する（ジャンル追加時にここは触らない） -->
   <div class="tabs" id="genreTabs" role="tablist" aria-label="ジャンル"></div>
@@ -180,7 +215,9 @@
       <li><strong>職種別の3ジャンル</strong>は、その仕事で実際に起きるトラブルが題材です。<strong>エンジニア編</strong>はデプロイ失敗やメモリリーク、<strong>デザイナー編</strong>は入稿事故やレビューのすれ違い、<strong>動画編集者編</strong>は書き出しや撮影条件のつまずきを扱います</li>
       <li>難易度は★〜★★★★の4段階。CASE FILESの上部で絞り込めます。最高難易度の★★★★は各ジャンルに1問だけ用意しました</li>
       <li>ヒントは1問につき3段階。使うほどスコア（質問回数）が不利になります。行き詰まったら「降参する」で真相を読めます</li>
+      <li><strong>今日の1問</strong>は日替わりで全ジャンルから1問が選ばれます。誰が開いても同じ日は同じ問題なので、質問回数を競い合えます。連続してクリアした日数（連続日数）も記録されます</li>
       <li>クリア状況はこの端末に自動保存されます（登録・インストール不要）</li>
+      <li><strong>ホーム画面に追加すると、オフラインでも遊べます</strong>。iPhone・iPadはSafariの共有ボタンから「ホーム画面に追加」、Android・PCはブラウザのメニューから「インストール」を選んでください</li>
     </ul>
     <h2>遊び方</h2>
     <ol>
@@ -226,6 +263,18 @@
   })();
 </script>
 
-<script type="module" src="js/main.js?v=20260807a"></script>
+<script type="module" src="js/main.js?v=20260809a"></script>
+<script>
+  // Service Worker の登録（オフライン再生用）。
+  // ⚠️ スクリプトURLに ?v= は付けない。ブラウザはSW本体を常に再検証するため不要で、
+  //    付けると登録URLが毎回変わって更新検知が濁る。バージョンは sw.js 内の VERSION で管理する。
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function (error) {
+        console.warn("Service Workerを登録できませんでした:", error);
+      });
+    });
+  }
+</script>
 </body>
 </html>
