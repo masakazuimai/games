@@ -1,0 +1,71 @@
+Copyright (c) 2026 今井政和 (Masakazu Imai) / ORECTIC
+All Rights Reserved.
+
+---
+
+## 日本語
+
+本リポジトリに含まれるすべてのファイル（ソースコード、クイズの問題文および解答、
+テキスト、画像、アイコン、その他の制作物。以下「本コンテンツ」）の著作権は
+今井政和に帰属します。
+
+本リポジトリは公開されていますが、これはオープンソースソフトウェアとしての
+提供を意味しません。以下の条件で利用を許諾します。
+
+### 許諾する行為
+
+- 本コンテンツを閲覧し、学習・参考のために読むこと
+- 個人の学習目的で、自身のローカル環境において実行・改変すること
+
+### 禁止する行為
+
+事前の書面による許諾なく、以下を行うことを禁止します。
+
+- 本コンテンツの全部または一部の再配布、公開、再公開（改変の有無を問わない）
+- 商用利用（広告収入を伴う公開を含む）
+- 本コンテンツを用いた派生サービス・派生サイトの公開
+- クイズの問題文および解答の抽出、転載、データセットとしての利用
+- 本コンテンツの全部または一部を、機械学習モデルの学習データとして使用すること
+
+利用許諾に関するお問い合わせは https://github.com/masakazuimai までご連絡ください。
+
+### 免責
+
+本コンテンツは現状有姿で提供され、明示黙示を問わずいかなる保証も行いません。
+本コンテンツの利用により生じたいかなる損害についても、著作権者は責任を負いません。
+
+---
+
+## English
+
+All files contained in this repository (source code, quiz questions and answers,
+text, images, icons, and other works; the "Content") are the copyrighted work of
+Masakazu Imai.
+
+This repository is publicly visible, but it is NOT open source software.
+Use is permitted only under the following terms.
+
+### Permitted
+
+- Viewing and reading the Content for study and reference
+- Running and modifying the Content locally for personal educational purposes
+
+### Prohibited
+
+Without prior written permission, you may not:
+
+- Redistribute, publish, or republish the Content in whole or in part,
+  with or without modification
+- Use the Content for commercial purposes, including publication accompanied
+  by advertising revenue
+- Publish derivative services or websites based on the Content
+- Extract, reproduce, or compile the quiz questions and answers as a dataset
+- Use the Content, in whole or in part, as training data for machine learning models
+
+For licensing inquiries, please contact https://github.com/masakazuimai
+
+### Disclaimer
+
+The Content is provided "as is", without warranty of any kind, express or implied.
+The copyright holder shall not be liable for any damages arising from the use of
+the Content.
