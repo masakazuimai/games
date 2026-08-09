@@ -47,11 +47,13 @@ jobs:
               echo "判定: deploy.yml（共通設定）変更 → 全ゲームデプロイ"
               TARGETS=$(all_dirs)
             else
-              # 変更ファイルのトップレベルディレクトリのうち index.html を持つものだけ
+              # 変更ファイルのトップレベルディレクトリのうち index.html を持つものだけ。
+              # 該当なし（LICENSE等の直下ファイルのみの変更）だとgrep/testが1を返して
+              # bash -e でジョブごと落ちるため、|| true で「対象なし」に倒す。
               TARGETS=$(echo "$CHANGED" | grep '/' | cut -d/ -f1 | sort -u \
                 | while read -r d; do
                     [ -f "${d}/index.html" ] && echo "$d"
-                  done)
+                  done) || true
             fi
           fi
 
