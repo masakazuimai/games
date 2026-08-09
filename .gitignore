@@ -1,0 +1,11 @@
+.DS_Store
+Thumbs.db
+*.log
+
+# Playwright検証用の一時ファイル
+.playwright-mcp/
+desktop-view.png
+mobile-view.png
+
+# エディタのローカル設定（Live Serverポート等・各自の環境依存）
+.vscode/

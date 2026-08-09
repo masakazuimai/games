@@ -1,0 +1,113 @@
+name: Deploy to ConoHa
+
+# まずSSH(rsync)で配信を試み、SSH障害中(例: CVE-2026-43499対応の一時停止)で失敗したら
+# 同じ内容をFTPSで自動フォールバック配信する。SSH復旧後はSSHが成功しFTPは自動でスキップされる。
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+  workflow_dispatch: {} # 手動実行＝全ゲーム強制デプロイ（取りこぼし時・一括再同期の保険）
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # git diff で変更ディレクトリを判定するため履歴を取得
+
+      - name: Determine target directories
+        id: targets
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          ZERO="0000000000000000000000000000000000000000"
+
+          # index.html を持つトップレベルディレクトリ＝デプロイ対象ゲーム
+          # 転送先は DEPLOY_PATH（= docroot の /games/）配下の同名ディレクトリ
+          all_dirs() {
+            for d in */; do
+              [ -f "${d}index.html" ] && echo "${d%/}"
+            done
+          }
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "判定: 手動実行 → 全ゲームデプロイ"
+            TARGETS=$(all_dirs)
+          elif [ -z "${BEFORE_SHA:-}" ] || [ "$BEFORE_SHA" = "$ZERO" ]; then
+            echo "判定: 初回push（比較元なし） → 全ゲームデプロイ"
+            TARGETS=$(all_dirs)
+          else
+            CHANGED=$(git diff --name-only "$BEFORE_SHA" "$AFTER_SHA")
+            if echo "$CHANGED" | grep -qE '^\.github/workflows/deploy\.yml$'; then
+              echo "判定: deploy.yml（共通設定）変更 → 全ゲームデプロイ"
+              TARGETS=$(all_dirs)
+            else
+              # 変更ファイルのトップレベルディレクトリのうち index.html を持つものだけ
+              TARGETS=$(echo "$CHANGED" | grep '/' | cut -d/ -f1 | sort -u \
+                | while read -r d; do
+                    [ -f "${d}/index.html" ] && echo "$d"
+                  done)
+            fi
+          fi
+
+          TARGETS=$(echo "$TARGETS" | tr '\n' ' ' | xargs)
+          echo "対象: ${TARGETS:-（なし）}"
+          echo "targets=$TARGETS" >> "$GITHUB_OUTPUT"
+
+      # 第1経路: SSH(rsync)。障害中は失敗するが continue-on-error でジョブは止めない。
+      - name: Attempt SSH deploy
+        id: ssh
+        if: steps.targets.outputs.targets != ''
+        continue-on-error: true
+        env:
+          LC_ALL: C
+          LANG: C
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          REMOTE_PATH: ${{ secrets.DEPLOY_PATH }}
+          TARGETS: ${{ steps.targets.outputs.targets }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p "${REMOTE_PORT}" -H "${REMOTE_HOST}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          DEST=$(echo "${REMOTE_PATH}" | tr -d '[:space:]')
+          REMOTE="${REMOTE_USER}@${REMOTE_HOST}"
+          PORT=$(echo "${REMOTE_PORT}" | tr -d '[:space:]')
+          for name in $TARGETS; do
+            echo "Deploying (SSH): ${name} -> ${DEST}/${name}"
+            ssh -p "${PORT}" "${REMOTE}" "mkdir -p ${DEST}/${name}"
+            rsync -az -e "ssh -p ${PORT}" "${name}/" "${REMOTE}:${DEST}/${name}/"
+          done
+
+      # 第2経路: SSHが失敗したときのみFTPSで自動フォールバック（同じTARGETSを配信）。
+      - name: Install lftp (FTPS fallback)
+        if: steps.targets.outputs.targets != '' && steps.ssh.outcome == 'failure'
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: FTPS fallback deploy
+        if: steps.targets.outputs.targets != '' && steps.ssh.outcome == 'failure'
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DEPLOY_PATH: ${{ secrets.FTP_DEPLOY_PATH }}
+          TARGETS: ${{ steps.targets.outputs.targets }}
+        run: |
+          echo "SSHデプロイ失敗を検知 → FTPSでフォールバック配信します"
+          DEST=$(echo "${FTP_DEPLOY_PATH}" | tr -d '[:space:]')
+          for name in $TARGETS; do
+            echo "Deploying (FTPS): ${name} -> ${DEST}/${name}"
+            # 明示的FTPS。SSH版 rsync(-az・削除なし)と挙動を揃える。
+            lftp -u "${FTP_USER},${FTP_PASSWORD}" "${FTP_HOST}" -e "set ftp:ssl-force true; set ftp:ssl-protect-data true; set ssl:verify-certificate no; mirror -R --verbose '${name}/' '${DEST}/${name}/'; bye"
+          done
+
+      - name: Nothing to deploy
+        if: steps.targets.outputs.targets == ''
+        run: echo "変更されたゲームディレクトリはありません。デプロイをスキップします。"
