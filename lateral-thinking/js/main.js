@@ -9,8 +9,8 @@ import {
   countByLevel,
   findGenre,
   totalPuzzleCount,
-} from "./puzzles.js?v=20260829a"
-import { AI_PROVIDERS, callAI } from "./ai.js?v=20260829a"
+} from "./puzzles.js?v=20260829b"
+import { AI_PROVIDERS, callAI } from "./ai.js?v=20260829b"
 import {
   buildAiPrompt,
   checkSolution,
@@ -18,13 +18,13 @@ import {
   parseAiVerdict,
   verdictClass,
   verdictLabel,
-} from "./engine.js?v=20260829a"
+} from "./engine.js?v=20260829b"
 import {
   currentStreak,
   dailyCase,
   dailyResultFor,
   recordDailyClear,
-} from "./daily.js?v=20260829a"
+} from "./daily.js?v=20260829b"
 
 const STORAGE_KEYS = {
   progress: "lateral-thinking:progress",
@@ -425,6 +425,9 @@ async function handleQuestion(question) {
     puzzle_id: state.puzzle.id,
     genre: state.playingGenre.id,
     ai_status: aiStatus(),
+    // 判定表を拡充すべきか（＝答えるべき質問なのか、そもそも無関係な質問なのか）は
+    // 率だけでは判別できないため、外した質問文そのものを送る。GA4の上限に合わせて100字。
+    question_text: question.slice(0, 100),
   })
 
   const status = aiStatus()
