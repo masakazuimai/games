@@ -9,8 +9,8 @@ import {
   countByLevel,
   findGenre,
   totalPuzzleCount,
-} from "./puzzles.js?v=20260809a"
-import { AI_PROVIDERS, callAI } from "./ai.js?v=20260809a"
+} from "./puzzles.js?v=20260829a"
+import { AI_PROVIDERS, callAI } from "./ai.js?v=20260829a"
 import {
   buildAiPrompt,
   checkSolution,
@@ -18,13 +18,13 @@ import {
   parseAiVerdict,
   verdictClass,
   verdictLabel,
-} from "./engine.js?v=20260809a"
+} from "./engine.js?v=20260829a"
 import {
   currentStreak,
   dailyCase,
   dailyResultFor,
   recordDailyClear,
-} from "./daily.js?v=20260809a"
+} from "./daily.js?v=20260829a"
 
 const STORAGE_KEYS = {
   progress: "lateral-thinking:progress",
@@ -409,11 +409,23 @@ async function handleQuestion(question) {
 
   print(`<span class="mark">Q&gt;</span>${escapeHtml(question)}`, "q")
 
+  // 質問文そのものは送らず、判定表の網羅率だけを測る（AI判定を入れるべきかの判断材料）。
+  window.gtag?.("event", "question_asked", {
+    puzzle_id: state.puzzle.id,
+    genre: state.playingGenre.id,
+  })
+
   const ruleResult = judgeByRules(question, state.puzzle)
   if (ruleResult) {
     await showVerdict(ruleResult.verdict, ruleResult.note, "")
     return
   }
+
+  window.gtag?.("event", "question_unmatched", {
+    puzzle_id: state.puzzle.id,
+    genre: state.playingGenre.id,
+    ai_status: aiStatus(),
+  })
 
   const status = aiStatus()
   if (status !== "on") {

@@ -15,7 +15,7 @@
 //     ただし「1回は古い画面が出る」ので、意図した更新なら必ず2までやること。
 //   ※ SHELL_ASSETS への追加漏れは、その1件がオフラインで落ちるだけで他は動く。
 
-const VERSION = "20260809a"
+const VERSION = "20260829a"
 const SHELL_CACHE = `lt-shell-${VERSION}`
 const FONT_CACHE = `lt-font-${VERSION}`
 
