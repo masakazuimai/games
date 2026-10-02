@@ -102,8 +102,16 @@
 <!-- End Google Tag Manager -->
 <script>
   // main.js のカスタムイベント（gtag("event", …)）をGTM経由でGA4へ届ける
+  // GTM配下のGoogleタグは send_to が無いイベントを送らないため、宛先を明示する
   window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
+  window.gtag = function () {
+    var args = Array.prototype.slice.call(arguments);
+    if (args[0] === "event") {
+      args[2] = Object.assign({ send_to: "G-7Z6M3CJEV3" }, args[2]);
+    }
+    // gtagコマンドは配列でなく arguments オブジェクトで積む必要がある
+    (function () { window.dataLayer.push(arguments); }).apply(null, args);
+  };
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
