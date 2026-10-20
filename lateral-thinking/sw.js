@@ -14,10 +14,9 @@
 //   ※ 1・2を忘れても永久に古いままにはならないが、追いつくのは HTTP キャッシュ
 //     （サーバー設定で max-age 7日）が切れてから。裏の再取得もブラウザの HTTP キャッシュを
 //     通るため、再訪者には最大7日古いファイルが届く。意図した更新なら必ず1・2までやること。
-//     一括更新は ~/.claude/projects/-Users-orectic-Projects-games/automation/bump-cache.sh
 //   ※ SHELL_ASSETS への追加漏れは、その1件がオフラインで落ちるだけで他は動く。
 
-const VERSION = "20261020a"
+const VERSION = "20261020b"
 const SHELL_CACHE = `lt-shell-${VERSION}`
 const FONT_CACHE = `lt-font-${VERSION}`
 
