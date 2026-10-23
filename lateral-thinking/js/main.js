@@ -9,8 +9,8 @@ import {
   countByLevel,
   findGenre,
   totalPuzzleCount,
-} from "./puzzles.js?v=20261024a"
-import { AI_PROVIDERS, callAI } from "./ai.js?v=20261024a"
+} from "./puzzles.js?v=20261024b"
+import { AI_PROVIDERS, callAI } from "./ai.js?v=20261024b"
 import {
   buildAiPrompt,
   checkSolution,
@@ -18,13 +18,13 @@ import {
   parseAiVerdict,
   verdictClass,
   verdictLabel,
-} from "./engine.js?v=20261024a"
+} from "./engine.js?v=20261024b"
 import {
   currentStreak,
   dailyCase,
   dailyResultFor,
   recordDailyClear,
-} from "./daily.js?v=20261024a"
+} from "./daily.js?v=20261024b"
 
 const STORAGE_KEYS = {
   progress: "lateral-thinking:progress",
@@ -598,7 +598,7 @@ function shareText() {
     lines.push(`質問${state.questions}回 / ヒント${state.hintsUsed}回`)
   }
 
-  lines.push("#ウミガメのスープ #水平思考クイズ #脳トレ")
+  lines.push("#水平思考クイズ #ラテラルシンキング #脳トレ")
   return lines.join("\n")
 }
 
