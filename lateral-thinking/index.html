@@ -258,27 +258,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <!-- 右下フローティング広告（300×250固定） -->
-<div id="ad-widget" class="footer-ad">
-  <div class="ad-widget__head">
-    <span class="ad-widget__label">広告</span>
-    <button id="ad-close" class="ad-widget__close" type="button" aria-label="広告を閉じる">×</button>
-  </div>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4871781946658288" crossorigin="anonymous"></script>
-  <!-- レスポンシブユニットをコンテナ実寸(300×250)で固定配信（auto指定は使わない） -->
-  <ins class="adsbygoogle" style="display: block" data-ad-client="ca-pub-4871781946658288" data-ad-slot="5089301418"></ins>
-  <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-</div>
-<script>
-  // 右下フローティング広告の「×で閉じる」（記憶せず再読込で再表示）
-  (function () {
-    var w = document.getElementById("ad-widget");
-    var b = document.getElementById("ad-close");
-    if (!w || !b) return;
-    b.addEventListener("click", function () { w.classList.add("is-closed"); });
-  })();
-</script>
+<!-- 広告テスト（2026-10-24〜6週間）: 右下広告を停止中。全画面広告用にローダーのみ残す -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4871781946658288" crossorigin="anonymous"></script>
 
 <script type="module" src="js/main.js?v=20261024d"></script>
 <script>
