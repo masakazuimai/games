@@ -8,7 +8,7 @@ CodeQuest.work で公開しているブラウザゲーム集です。
 
 | ゲーム | 説明 | URL |
 |---|---|---|
-| [ディレクターが作ったウミガメのスープ](./lateral-thinking/) | 脳トレになる水平思考クイズ68問（4ジャンル×17問・全問オリジナル） | [デモ](https://codequest.work/games/lateral-thinking/) |
+| [ディレクターが作った水平思考クイズ](./lateral-thinking/) | 脳トレになるラテラルシンキング68問（4ジャンル×17問・全問オリジナル） | [デモ](https://codequest.work/games/lateral-thinking/) |
 
 ## 構成
 
