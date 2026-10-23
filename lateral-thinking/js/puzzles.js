@@ -8,10 +8,10 @@
 //   verdictStyle は判定ラベルの出し分け。"en" なら YES / NO / IRRELEVANT、
 //   "ja" なら はい／いいえ／関係ありません。ジャンルの雰囲気に合わせて選ぶ。
 
-import { GENERAL_PUZZLES } from "./data-general.js?v=20261024c"
-import { ENGINEER_PUZZLES } from "./data-engineer.js?v=20261024c"
-import { DESIGNER_PUZZLES } from "./data-designer.js?v=20261024c"
-import { VIDEO_PUZZLES } from "./data-video.js?v=20261024c"
+import { GENERAL_PUZZLES } from "./data-general.js?v=20261024d"
+import { ENGINEER_PUZZLES } from "./data-engineer.js?v=20261024d"
+import { DESIGNER_PUZZLES } from "./data-designer.js?v=20261024d"
+import { VIDEO_PUZZLES } from "./data-video.js?v=20261024d"
 
 // 並び順がそのままタブの並び順になる。通常編を先頭に置き、以降は職種別。
 export const GENRES = [
