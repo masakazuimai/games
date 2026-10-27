@@ -16,7 +16,7 @@
 //     通るため、再訪者には最大7日古いファイルが届く。意図した更新なら必ず1・2までやること。
 //   ※ SHELL_ASSETS への追加漏れは、その1件がオフラインで落ちるだけで他は動く。
 
-const VERSION = "20261024d"
+const VERSION = "20261027a"
 const SHELL_CACHE = `lt-shell-${VERSION}`
 const FONT_CACHE = `lt-font-${VERSION}`
 

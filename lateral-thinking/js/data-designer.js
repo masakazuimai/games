@@ -66,6 +66,7 @@ export const DESIGNER_PUZZLES = [
       { any: ["ロゴ", "見出し", "アイコン", "ボタン"], a: "YES", note: "どれでも同じことが起きます" },
       { any: ["印刷", "web", "媒体"], a: "IRRELEVANT" },
       { any: ["クライアント", "納期"], a: "IRRELEVANT" },
+      { any: ["テキスト", "文字ですか", "文字なの", "それは文字", "三角形", "矢印", "オブジェクト"], a: "IRRELEVANT" },
     ],
   },
 
@@ -268,6 +269,7 @@ export const DESIGNER_PUZZLES = [
       { any: ["容量が増える", "重くなる"], a: "YES", note: "対策の副作用としては起こります" },
       { any: ["印刷", "dpi"], a: "NO" },
       { any: ["納期", "料金"], a: "IRRELEVANT" },
+      { any: ["スマートフォン", "iphone", "携帯"], a: "YES" },
     ],
   },
 
