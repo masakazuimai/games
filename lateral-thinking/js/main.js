@@ -9,8 +9,8 @@ import {
   countByLevel,
   findGenre,
   totalPuzzleCount,
-} from "./puzzles.js?v=20261027a"
-import { AI_PROVIDERS, callAI } from "./ai.js?v=20261027a"
+} from "./puzzles.js?v=20261027b"
+import { AI_PROVIDERS, callAI } from "./ai.js?v=20261027b"
 import {
   buildAiPrompt,
   checkSolution,
@@ -18,13 +18,13 @@ import {
   parseAiVerdict,
   verdictClass,
   verdictLabel,
-} from "./engine.js?v=20261027a"
+} from "./engine.js?v=20261027b"
 import {
   currentStreak,
   dailyCase,
   dailyResultFor,
   recordDailyClear,
-} from "./daily.js?v=20261027a"
+} from "./daily.js?v=20261027b"
 
 const STORAGE_KEYS = {
   progress: "lateral-thinking:progress",
