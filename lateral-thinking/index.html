@@ -10,7 +10,6 @@
 <link rel="alternate" hreflang="x-default" href="https://codequest.work/games/lateral-thinking/">
 <meta name="robots" content="index, follow">
 
-<!-- OGP -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="CodeQuest.work">
 <meta property="og:locale" content="ja_JP">
@@ -22,13 +21,11 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="ディレクターが作った水平思考クイズ／ラテラルシンキング68問">
 
-<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ディレクターが作った水平思考クイズ｜脳トレになるラテラルシンキング68問">
 <meta name="twitter:description" content="質問を打ち込むと「はい／いいえ／関係ありません」が返る水平思考クイズ。通常編・エンジニア編・デザイナー編・動画編集者編を各17問収録した無料ゲームです。">
 <meta name="twitter:image" content="https://codequest.work/games/lateral-thinking/assets/og.jpg?v=20261024">
 
-<!-- 構造化データ -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -92,24 +89,19 @@
 }
 </script>
 
-<!-- Google Tag Manager -->
 <script>
   (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
   var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
   j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-PT6PZ5N2');
 </script>
-<!-- End Google Tag Manager -->
 <script>
-  // main.js のカスタムイベント（gtag("event", …)）をGTM経由でGA4へ届ける
-  // GTM配下のGoogleタグは send_to が無いイベントを送らないため、宛先を明示する
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () {
     var args = Array.prototype.slice.call(arguments);
     if (args[0] === "event") {
       args[2] = Object.assign({ send_to: "G-7Z6M3CJEV3" }, args[2]);
     }
-    // gtagコマンドは配列でなく arguments オブジェクトで積む必要がある
     (function () { window.dataLayer.push(arguments); }).apply(null, args);
   };
 </script>
@@ -120,23 +112,18 @@
 
 <link rel="stylesheet" href="css/style.css?v=20261027c">
 
-<!-- PWA（ホーム画面に追加してオフラインで遊べるようにする） -->
 <link rel="manifest" href="manifest.json?v=20261027c">
 <meta name="theme-color" content="#0a0a0a">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- 旧iOS Safari は mobile-web-app-capable を見ないので両方置く -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="水平思考クイズ">
-<!-- iOSはmanifestのiconsではなくこちらを参照する -->
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=20261027c">
 <link rel="icon" href="assets/icon-192.png?v=20261027c" type="image/png">
 </head>
 <body>
-<!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PT6PZ5N2"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 <div class="wrap">
   <header class="site-head">
     <h1>ディレクターが作った<br>水平思考クイズ<span class="sub">ラテラルシンキング <span data-puzzle-count>68</span>問 / 脳トレ</span></h1>
@@ -150,7 +137,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <strong>通常編</strong>のほか、実務で起きるトラブルを題材にした<strong>エンジニア編・デザイナー編・動画編集者編</strong>があり、難易度でも絞り込めます。登録・インストールは不要です。
   </p>
 
-  <!-- 今日の1問。中身は js/daily.js が日付から決めて流し込む -->
   <section class="daily" id="dailyBanner" aria-label="今日の1問">
     <div class="daily-main">
       <span class="daily-label">TODAY'S CASE</span>
@@ -163,7 +149,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </section>
 
-  <!-- ジャンルタブは js/puzzles.js の GENRES から生成する（ジャンル追加時にここは触らない） -->
   <div class="tabs" id="genreTabs" role="tablist" aria-label="ジャンル"></div>
 
   <div class="picker">
@@ -257,15 +242,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </footer>
 </div>
 
-<!-- 右下フローティング広告（300×250固定） -->
-<!-- 広告テスト（2026-10-24〜6週間）: 右下広告を停止中。全画面広告用にローダーのみ残す -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4871781946658288" crossorigin="anonymous"></script>
 
 <script type="module" src="js/main.js?v=20261027c"></script>
 <script>
-  // Service Worker の登録（オフライン再生用）。
-  // ⚠️ スクリプトURLに ?v= は付けない。ブラウザはSW本体を常に再検証するため不要で、
-  //    付けると登録URLが毎回変わって更新検知が濁る。バージョンは sw.js 内の VERSION で管理する。
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("sw.js").catch(function (error) {

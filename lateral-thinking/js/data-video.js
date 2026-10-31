@@ -1,5 +1,3 @@
-// 動画編集者編の問題データ（16問）。
-// データ構造は data-engineer.js と同一。
 
 export const VIDEO_PUZZLES = [
   {

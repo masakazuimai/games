@@ -1,9 +1,5 @@
 @charset "UTF-8";
 
-/* ===============================================================
-   水平思考クイズ｜ラテラルシンキング
-   northStar: "Monochrome terminal with amber accents"
-   =============================================================== */
 
 :root {
   --bg: #0a0a0a;
@@ -40,7 +36,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* CRTの走査線と周辺減光。装飾なのでクリックは透過させる */
 body::before,
 body::after {
   content: "";
@@ -69,7 +64,6 @@ body::after {
 a { color: var(--amber); }
 a:hover { color: var(--amber-bright); }
 
-/* ---------- ヘッダー ---------- */
 .site-head {
   display: flex;
   align-items: center;
@@ -113,7 +107,6 @@ a:hover { color: var(--amber-bright); }
 }
 .lead strong { color: var(--text); font-weight: 500; }
 
-/* ---------- 今日の1問 ---------- */
 .daily {
   display: flex;
   align-items: center;
@@ -162,7 +155,6 @@ a:hover { color: var(--amber-bright); }
   color: var(--amber-bright);
   white-space: nowrap;
 }
-/* display を持つ要素の隣で hidden を使うため、UAスタイルを明示的に補強する */
 .daily-streak[hidden] { display: none; }
 .daily-btn {
   appearance: none;
@@ -180,7 +172,6 @@ a:hover { color: var(--amber-bright); }
 }
 .daily-btn:hover { background: var(--amber-bright); }
 
-/* クリア済みは緑に寄せて「今日はもう終わった」ことを一目で分かるようにする */
 .daily.is-cleared { border-left-color: var(--yes); }
 .daily.is-cleared .daily-label { color: var(--yes); }
 .daily.is-cleared .daily-btn {
@@ -191,8 +182,6 @@ a:hover { color: var(--amber-bright); }
 }
 .daily.is-cleared .daily-btn:hover { color: var(--amber); border-color: var(--amber); }
 
-/* ---------- ジャンルタブ ---------- */
-/* ジャンルが増えても自動で段が増えるようグリッドで組む（flexだと横に溢れる） */
 .tabs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -228,7 +217,6 @@ a:hover { color: var(--amber-bright); }
   box-shadow: inset 0 -2px 0 var(--amber);
 }
 
-/* ---------- 問題リスト ---------- */
 .picker {
   border: 1px solid var(--border);
   border-radius: 0 0 var(--radius) var(--radius);
@@ -249,7 +237,6 @@ a:hover { color: var(--amber-bright); }
 }
 .picker-head .ghost { white-space: nowrap; letter-spacing: 0.1em; }
 
-/* 難易度フィルタ */
 .level-filter {
   display: flex;
   flex-wrap: wrap;
@@ -304,7 +291,6 @@ a:hover { color: var(--amber-bright); }
   cursor: pointer;
   text-align: left;
   background: var(--panel);
-  /* 空きセルが色違いのブロックに見えないよう、区切りは枠線で引く */
   border: none;
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
@@ -325,7 +311,6 @@ a:hover { color: var(--amber-bright); }
 .case-level { color: var(--text-faint); letter-spacing: -0.1em; }
 .case-flag { color: var(--yes); }
 
-/* ---------- ターミナル ---------- */
 .terminal {
   border: 1px solid var(--border-bright);
   border-radius: var(--radius);
@@ -460,13 +445,11 @@ a:hover { color: var(--amber-bright); }
 }
 .result b { color: var(--amber-bright); font-weight: 700; }
 
-/* 今日の1問をクリアしたときの連続日数 */
 .daily-result {
   margin: 0 0 10px;
   color: var(--amber-bright);
 }
 
-/* クリア時のシェア */
 .share-row {
   display: flex;
   align-items: center;
@@ -509,7 +492,6 @@ a:hover { color: var(--amber-bright); }
 }
 @keyframes blink { 50% { opacity: 0; } }
 
-/* ---------- 入力 ---------- */
 .term-input {
   display: flex;
   align-items: center;
@@ -575,7 +557,6 @@ a:hover { color: var(--amber-bright); }
 }
 .ghost:hover { color: var(--amber); border-color: var(--amber); }
 
-/* ---------- AI設定 ---------- */
 .settings {
   margin: 28px 0 0;
   border: 1px solid var(--border);
@@ -603,7 +584,6 @@ a:hover { color: var(--amber-bright); }
   gap: 10px;
   margin: 12px 0;
 }
-/* display:flex がUAの [hidden]{display:none} を上書きしてしまうため明示的に打ち消す */
 .settings-row[hidden] { display: none; }
 .settings-row label { color: var(--text-dim); min-width: 120px; }
 .settings-row select,
@@ -621,7 +601,6 @@ a:hover { color: var(--amber-bright); }
 .settings-row select:focus,
 .settings-row input:focus { outline: 1px solid var(--amber); }
 
-/* ---------- 説明・フッター ---------- */
 .about {
   margin-top: 56px;
   color: var(--text-dim);
@@ -650,7 +629,6 @@ footer {
 }
 .footer-links { display: flex; flex-wrap: wrap; gap: 12px 20px; }
 
-/* ---------- 広告（ミニアプリ規格 300×250） ---------- */
 .footer-ad {
   position: fixed;
   right: 0;
@@ -716,32 +694,26 @@ footer {
     box-shadow: none;
     z-index: auto;
   }
-  .footer-ad.is-closed { display: flex; } /* PCで閉じてもSPでは表示 */
+  .footer-ad.is-closed { display: flex; }
   .ad-widget__head { display: none; }
   .footer-ad ins.adsbygoogle { width: 300px; height: 250px; }
 }
 
-/* ---------- レスポンシブ ---------- */
 @media screen and (max-width: 640px) {
   .term-body { min-height: 50vh; max-height: 58vh; }
   .case-list { grid-template-columns: 1fr; }
-  /* 見出しとRESETを1段目、難易度フィルタを2段目に回して3段化を防ぐ。
-     見出しの字間を詰めないとRESETが乗り切らず3段になる */
   .picker-head { letter-spacing: 0.04em; }
   .picker-genre { display: none; }
   #pickerLabel { order: 1; }
   .picker-head .ghost { order: 2; }
   .level-filter { order: 3; width: 100%; margin-left: 0; }
-  /* パス表示を落として、カウンタ類を1行に収める */
   .term-title { display: none; }
   .term-meta { gap: 10px; margin-left: auto; }
   .send { padding: 7px 14px; }
-  /* 今日の1問は縦積みにして、ボタンを横幅いっぱいの押しやすいタップ領域にする */
   .daily-side { width: 100%; margin-left: 0; }
   .daily-btn { flex: 1 1 auto; }
 }
 
-/* ---------- モーション配慮 ---------- */
 @media (prefers-reduced-motion: reduce) {
   .caret { animation: none; }
   body::before { display: none; }

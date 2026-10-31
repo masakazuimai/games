@@ -1,5 +1,3 @@
-// 通常編の問題データ（17問・すべてオリジナル）。
-// データ構造は data-engineer.js と同一。
 
 export const GENERAL_PUZZLES = [
   {

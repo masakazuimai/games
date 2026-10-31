@@ -3,12 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>アイコン書き出し用テンプレート</title>
-<!-- 制作用の作業ファイルなので検索結果には出さない -->
 <meta name="robots" content="noindex, nofollow">
-<!--
-  ホーム画面アイコンの元データ。Playwrightで #any / #maskable を512pxで撮影し、
-  sipsで192・180へ縮小して assets/ に置く。デザインを直すときはここを編集して撮り直す。
--->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
@@ -31,7 +26,6 @@
     position: relative;
     overflow: hidden;
   }
-  /* CRTの走査線。本体のトンマナと揃える */
   .icon::after {
     content: "";
     position: absolute;
@@ -58,7 +52,6 @@
     box-shadow: 0 0 32px rgba(255, 176, 0, 0.45);
   }
 
-  /* 通常アイコン: 端まで使い、内側にターミナル枠を1本入れる */
   #any .glyph { font-size: 190px; }
   #any .cursor { width: 96px; height: 190px; }
   #any .frame {
@@ -67,7 +60,6 @@
     border: 4px solid rgba(255, 176, 0, 0.32);
   }
 
-  /* マスカブル: 外周20%が削られる前提で、中央60%に収める */
   #maskable .glyph { font-size: 132px; }
   #maskable .cursor { width: 66px; height: 132px; }
 </style>

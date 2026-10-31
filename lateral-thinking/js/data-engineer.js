@@ -1,8 +1,3 @@
-// エンジニア編の問題データ（8問）。
-// rules は上から順に評価し、最初にマッチしたものを採用する（具体的な条件ほど先に置く）。
-//   any … いずれか1語を含めばマッチ / not … 1語でも含めばマッチさせない
-//   a   … "YES" | "NO" | "IRRELEVANT" | "UNCERTAIN"
-// solutionKeys は「グループの配列」。各グループから1語以上ヒットし、全グループを満たせば正解。
 
 export const ENGINEER_PUZZLES = [
   {

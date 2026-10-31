@@ -1,6 +1,3 @@
-// AIフォールバック。ルール表で判定できなかった質問だけをAIに投げる。
-// 既定はOFF。プレイヤーが明示的に有効化したときだけ呼ばれる。
-// 1語だけ返させる用途なのでストリーミングは使わない。
 
 export const AI_PROVIDERS = {
   off: {
@@ -27,11 +24,6 @@ export const AI_PROVIDERS = {
   },
 }
 
-/**
- * プロンプトを投げて応答テキストを返す。
- * @param {{provider: string, prompt: string, apiKey?: string}} params
- * @returns {Promise<string>}
- */
 export async function callAI({ provider, prompt, apiKey }) {
   const config = AI_PROVIDERS[provider]
   if (!config || provider === "off") throw new Error("AI判定は無効です")

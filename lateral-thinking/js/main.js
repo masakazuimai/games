@@ -1,8 +1,4 @@
-// 画面制御。ルール判定を第一手段とし、未ヒットかつAI有効時のみAIへ回す。
 
-// ⚠️ import先にも `?v=` を付ける。index.html の main.js にだけ付けても、
-// ここで読み込むサブモジュールはブラウザにキャッシュされたままになるため。
-// 更新時は index.html と下記の全 import のバージョンを揃えて上げること。
 import {
   GENRES,
   LEVEL_FILTERS,
@@ -65,26 +61,24 @@ const el = {
 }
 
 const state = {
-  genre: GENRES[0].id, // 一覧に表示しているジャンル
-  level: null, // 一覧の絞り込みレベル（null = ALL）
-  playingGenre: GENRES[0], // 解答中の問題が属するジャンル（一覧の切替とは独立）
+  genre: GENRES[0].id,
+  level: null,
+  playingGenre: GENRES[0],
   puzzle: null,
   questions: 0,
   hintsUsed: 0,
   mode: "question",
   finished: false,
   busy: false,
-  isDaily: false, // 解答中の問題が「今日の1問」と同一か
+  isDaily: false,
 }
 
-// 今日の1問。日付から決まるので起動時に一度だけ引く
 let today = dailyCase()
 
 let progress = readJson(STORAGE_KEYS.progress, {})
 let settings = readJson(STORAGE_KEYS.settings, { provider: "off" })
 let apiKeys = readJson(STORAGE_KEYS.apiKeys, {})
 
-/* ---------------- ストレージ ---------------- */
 
 function readJson(key, fallback) {
   try {
@@ -104,7 +98,6 @@ function writeJson(key, value) {
   }
 }
 
-/* ---------------- 出力 ---------------- */
 
 function escapeHtml(text) {
   return String(text).replace(
@@ -130,7 +123,6 @@ function printGap() {
   print("", "gap")
 }
 
-/** 1文字ずつ打ち出す。モーション低減設定では即時表示にする。 */
 function typeLine(text, className = "", speed = 22) {
   const line = print("", className)
   if (REDUCED_MOTION) {
@@ -160,7 +152,6 @@ function typeLine(text, className = "", speed = 22) {
   })
 }
 
-/* ---------------- 状態表示 ---------------- */
 
 function updateMeters() {
   el.qCount.textContent = String(state.questions).padStart(2, "0")
@@ -168,7 +159,6 @@ function updateMeters() {
   el.hintMeter.innerHTML = `hint <b>${"●".repeat(remaining)}${"○".repeat(state.hintsUsed)}</b>`
 }
 
-/** AIが実際に呼べる状態か。キー必須なのに未入力なら "nokey"。 */
 function aiStatus() {
   const config = AI_PROVIDERS[settings.provider]
   if (!config || settings.provider === "off") return "off"
@@ -189,7 +179,6 @@ function setBusy(busy) {
   el.askInput.disabled = busy
 }
 
-/** focus:false は、ユーザーが操作していない場面で画面が勝手に飛ぶのを防ぐため。 */
 function setMode(mode, { focus = true } = {}) {
   state.mode = mode
   const isAnswer = mode === "answer"
@@ -201,11 +190,9 @@ function setMode(mode, { focus = true } = {}) {
   if (focus) el.askInput.focus()
 }
 
-/* ---------------- 今日の1問 ---------------- */
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"]
 
-/** dateKey は既にJSTの暦日なので、曜日はUTCとして読む（ローカル時差でずらさない）。 */
 function formatDailyDate(dateKey) {
   const [year, month, day] = dateKey.split("-").map(Number)
   const weekday = WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()]
@@ -220,8 +207,6 @@ function renderDailyBanner() {
   const result = dailyResultFor(today.dateKey)
   const streak = currentStreak(today.dateKey)
 
-  // 狭い画面で折り返しても意味が崩れないよう、区切りはCSSに任せて単位ごとにspanで包む。
-  // ジャンルと★は同じ単位にして、★だけが行頭に取り残されるのを防ぐ
   el.dailyMeta.innerHTML = ""
   const units = [
     formatDailyDate(today.dateKey),
@@ -247,7 +232,6 @@ function renderDailyBanner() {
 
 el.dailyBtn.addEventListener("click", () => {
   if (state.busy) return
-  // 選んだ問題が一覧に見えていないと迷子になるため、一覧も今日のジャンルへ寄せる
   if (state.genre !== today.genre.id) {
     state.genre = today.genre.id
     syncGenreTabs()
@@ -262,9 +246,7 @@ el.dailyBtn.addEventListener("click", () => {
   })
 })
 
-/* ---------------- 問題リスト ---------------- */
 
-/** ジャンルタブを GENRES から生成する。ジャンル追加時にHTMLを触らずに済む。 */
 function renderGenreTabs() {
   el.genreTabs.innerHTML = ""
   GENRES.forEach((genre) => {
@@ -288,7 +270,6 @@ function syncGenreTabs() {
   })
 }
 
-/** 難易度の絞り込みボタン。件数はジャンルごとに数え直す。 */
 function renderLevelFilter() {
   const genre = findGenre(state.genre)
   el.levelFilter.innerHTML = ""
@@ -318,7 +299,6 @@ function visiblePuzzles(genre) {
 
 function renderCaseList() {
   const genre = findGenre(state.genre)
-  // ジャンル名は狭い画面で隠す（アクティブなタブに出ているため）
   el.pickerLabel.innerHTML = `CASE FILES<span class="picker-genre"> / ${escapeHtml(genre.code)}</span>`
   el.caseList.innerHTML = ""
 
@@ -326,7 +306,6 @@ function renderCaseList() {
   el.caseEmpty.hidden = list.length > 0
 
   list.forEach((puzzle) => {
-    // 通し番号は絞り込みで変わらないよう、ジャンル内の元の並び順から引く
     const number = genre.puzzles.indexOf(puzzle) + 1
     const record = progress[puzzle.id]
     const button = document.createElement("button")
@@ -344,7 +323,6 @@ function renderCaseList() {
   })
 }
 
-/** ジャンルを切り替えたら解答中の問題は破棄し、ターミナルを初期状態へ戻す。 */
 function resetTerminal(genre) {
   state.puzzle = null
   state.questions = 0
@@ -370,12 +348,10 @@ function switchGenre(genreId) {
   renderCaseList()
 }
 
-/* ---------------- ゲーム進行 ---------------- */
 
 async function selectPuzzle(puzzle, genre) {
   state.puzzle = puzzle
   state.playingGenre = genre
-  // 一覧から選んでも今日の1問と同じなら、デイリー扱いにする（入口で結果を変えない）
   state.isDaily = puzzle.id === today.puzzle.id
   state.questions = 0
   state.hintsUsed = 0
@@ -409,7 +385,6 @@ async function handleQuestion(question) {
 
   print(`<span class="mark">Q&gt;</span>${escapeHtml(question)}`, "q")
 
-  // 質問文そのものは送らず、判定表の網羅率だけを測る（AI判定を入れるべきかの判断材料）。
   window.gtag?.("event", "question_asked", {
     puzzle_id: state.puzzle.id,
     genre: state.playingGenre.id,
@@ -425,8 +400,6 @@ async function handleQuestion(question) {
     puzzle_id: state.puzzle.id,
     genre: state.playingGenre.id,
     ai_status: aiStatus(),
-    // 判定表を拡充すべきか（＝答えるべき質問なのか、そもそも無関係な質問なのか）は
-    // 率だけでは判別できないため、外した質問文そのものを送る。GA4の上限に合わせて100字。
     question_text: question.slice(0, 100),
   })
 
@@ -525,7 +498,6 @@ async function finishPuzzle(cleared) {
   writeJson(STORAGE_KEYS.progress, progress)
   renderCaseList()
 
-  // 今日の1問のクリアだけが連続日数に加算される（降参・過去問は対象外）
   let dailyInfo = null
   if (cleared && state.isDaily) {
     dailyInfo = recordDailyClear({
@@ -578,14 +550,11 @@ async function finishPuzzle(cleared) {
   }
 }
 
-/* ---------------- クリア時のシェア ---------------- */
 
-/** 共有先はcanonicalを使う（localhostのURLを配らないため）。 */
 function shareUrl() {
   return document.querySelector('link[rel="canonical"]')?.href ?? location.href
 }
 
-/** 真相は絶対に含めない。問題名とスコアだけを載せる。 */
 function shareText() {
   const stars = "★".repeat(state.puzzle.level)
   const lines = [`水平思考クイズ「${state.puzzle.title}」${stars} を解きました`]
@@ -672,7 +641,6 @@ function showHint() {
   printGap()
 }
 
-/* ---------------- コマンド ---------------- */
 
 const COMMAND_HELP = [
   "/hint    … ヒントを1段階開く（全3段階）",
@@ -731,7 +699,6 @@ async function runCommand(input) {
   print(`未知のコマンドです: ${escapeHtml(command)}（/help で一覧）`, "error")
 }
 
-/* ---------------- 入力 ---------------- */
 
 el.askForm.addEventListener("submit", async (event) => {
   event.preventDefault()
@@ -746,7 +713,6 @@ el.askForm.addEventListener("submit", async (event) => {
     if (value.startsWith("/")) {
       await runCommand(value)
     } else if (!requirePuzzle()) {
-      // 問題未選択
     } else if (state.finished) {
       print("この問題はすでに終了しています。上のCASE FILESから次を選んでください。", "note")
     } else if (state.mode === "answer") {
@@ -784,7 +750,6 @@ el.resetProgressBtn.addEventListener("click", () => {
   print("進捗をリセットしました。", "sys")
 })
 
-/* ---------------- AI設定 ---------------- */
 
 function renderProviderOptions() {
   el.providerSelect.innerHTML = ""
@@ -830,19 +795,13 @@ el.aiToggleBtn.addEventListener("click", () => {
   el.providerSelect.focus()
 })
 
-/* ---------------- 起動 ---------------- */
 
-/** 本文中の件数表記をデータの実数で置き換える（問題追加時の書き換え漏れを防ぐ）。 */
 function fillPuzzleCounts(total) {
   document.querySelectorAll("[data-puzzle-count]").forEach((node) => {
     node.textContent = String(total)
   })
 }
 
-/**
- * ホーム画面から起動されたか（PWAとして使われているか）を計測する。
- * iOSは display-mode を返さない場合があるので navigator.standalone も見る。
- */
 function reportDisplayMode() {
   const standalone =
     window.matchMedia("(display-mode: standalone)").matches ||
@@ -870,7 +829,6 @@ async function boot() {
   )
   print("判定は「はい／いいえ／関係ありません」の3種類です。/help でコマンド一覧。", "sys")
   printGap()
-  // 起動時は入力欄にフォーカスしない（ページ先頭からターミナルまで勝手にスクロールするため）
 }
 
 boot()
