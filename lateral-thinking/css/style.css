@@ -481,6 +481,71 @@ a:hover { color: var(--amber-bright); }
   color: var(--amber-bright);
   border-color: var(--amber);
 }
+.app-row {
+  margin: 0 0 14px;
+  color: var(--text-dim);
+}
+
+.app-cta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px 32px;
+  align-items: center;
+  margin: 24px 0;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid var(--border-bright);
+  border-left: 3px solid var(--amber);
+  background: rgba(231, 197, 154, 0.05);
+}
+.app-cta__eyebrow {
+  color: var(--amber);
+  margin: 0 0 4px;
+  letter-spacing: 0.08em;
+}
+.app-cta__title {
+  font-size: clamp(20px, 2.6vw, 24px);
+  margin: 0 0 10px;
+  color: var(--amber-bright);
+}
+.app-cta__points {
+  margin: 0 0 20px;
+  padding-left: 1.2em;
+  display: grid;
+  gap: 4px;
+}
+.app-cta__btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border: 1px solid var(--amber);
+  color: var(--amber-bright);
+  text-decoration: none;
+  font-weight: 700;
+  transition: background 0.15s, color 0.15s;
+}
+.app-cta__btn:hover {
+  background: var(--amber);
+  color: var(--bg);
+}
+.app-cta__qr {
+  margin: 0;
+  width: 164px;
+  text-align: center;
+}
+.app-cta__qr img {
+  display: block;
+  width: 148px;
+  height: 148px;
+  margin: 0 auto 8px;
+}
+.app-cta__qr figcaption {
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+@media (max-width: 768px), not all and (hover: hover) and (pointer: fine) {
+  .app-cta { grid-template-columns: 1fr; }
+  .app-cta__qr { display: none; }
+  .app-cta__btn { display: block; text-align: center; }
+}
 
 .caret {
   display: inline-block;

@@ -5,8 +5,8 @@ import {
   countByLevel,
   findGenre,
   totalPuzzleCount,
-} from "./puzzles.js?v=20261104a"
-import { AI_PROVIDERS, callAI } from "./ai.js?v=20261104a"
+} from "./puzzles.js?v=20261110a"
+import { AI_PROVIDERS, callAI } from "./ai.js?v=20261110a"
 import {
   buildAiPrompt,
   checkSolution,
@@ -14,13 +14,13 @@ import {
   parseAiVerdict,
   verdictClass,
   verdictLabel,
-} from "./engine.js?v=20261104a"
+} from "./engine.js?v=20261110a"
 import {
   currentStreak,
   dailyCase,
   dailyResultFor,
   recordDailyClear,
-} from "./daily.js?v=20261104a"
+} from "./daily.js?v=20261110a"
 
 const STORAGE_KEYS = {
   progress: "lateral-thinking:progress",
@@ -529,7 +529,10 @@ async function finishPuzzle(cleared) {
       "daily-result"
     )
   }
-  if (cleared) renderShareRow()
+  if (cleared) {
+    renderShareRow()
+    renderAppRow("clear")
+  }
   print("上のCASE FILESから次の問題を選べます。", "sys")
   printGap()
 
@@ -627,6 +630,35 @@ function renderShareRow() {
     }
   })
   row.appendChild(copyBtn)
+}
+
+const APP_URL = "https://codequest.work/app/lateral-thinking/site"
+
+function trackAppClick(placement) {
+  window.gtag?.("event", "app_store_click", { placement })
+}
+
+function renderAppRow(placement) {
+  if (/Android/i.test(navigator.userAgent)) return
+  const row = print("", "app-row")
+  row.append("続きの新作はアプリで → ")
+  const anchor = document.createElement("a")
+  anchor.href = APP_URL
+  anchor.target = "_blank"
+  anchor.rel = "noopener"
+  anchor.textContent = "App Store"
+  anchor.addEventListener("click", () => trackAppClick(placement))
+  row.appendChild(anchor)
+}
+
+function setupAppCta() {
+  const box = document.getElementById("appCta")
+  if (!box) return
+  if (/Android/i.test(navigator.userAgent)) {
+    box.remove()
+    return
+  }
+  box.querySelector(".app-cta__btn")?.addEventListener("click", () => trackAppClick("card"))
 }
 
 function showHint() {
@@ -820,6 +852,7 @@ async function boot() {
   renderLevelFilter()
   renderCaseList()
   reportDisplayMode()
+  setupAppCta()
 
   await typeLine("> connecting to host ...", "sys", 18)
   await typeLine(`> handshake complete. ${total} cases available.`, "sys", 12)

@@ -1,5 +1,5 @@
 
-import { GENRES } from "./puzzles.js?v=20261104a"
+import { GENRES } from "./puzzles.js?v=20261110a"
 
 const EPOCH = "2026-08-09"
 const STORAGE_KEY = "lateral-thinking:daily"
