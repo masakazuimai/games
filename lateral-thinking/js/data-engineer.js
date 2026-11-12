@@ -127,6 +127,7 @@ export const ENGINEER_PUZZLES = [
       { any: ["os", "windows", "mac", "linux"], a: "IRRELEVANT" },
       { any: ["言語", "フレームワーク", "何で書かれ"], a: "IRRELEVANT" },
       { any: ["テストの数", "件数", "多すぎ"], a: "NO" },
+      { any: ["学力が関係", "学力は関係", "学力に関係", "学力と関係", "学力が必要", "学力が問われ"], not: ["ない", "ません", "ずに"], a: "NO" },
     ],
   },
 

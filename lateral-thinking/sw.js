@@ -1,5 +1,5 @@
 
-const VERSION = "20261110a"
+const VERSION = "20261112a"
 const SHELL_CACHE = `lt-shell-${VERSION}`
 const FONT_CACHE = `lt-font-${VERSION}`
 
