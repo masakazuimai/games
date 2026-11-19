@@ -1,8 +1,8 @@
 
-import { GENERAL_PUZZLES } from "./data-general.js?v=20261112a"
-import { ENGINEER_PUZZLES } from "./data-engineer.js?v=20261112a"
-import { DESIGNER_PUZZLES } from "./data-designer.js?v=20261112a"
-import { VIDEO_PUZZLES } from "./data-video.js?v=20261112a"
+import { GENERAL_PUZZLES } from "./data-general.js?v=20261119a"
+import { ENGINEER_PUZZLES } from "./data-engineer.js?v=20261119a"
+import { DESIGNER_PUZZLES } from "./data-designer.js?v=20261119a"
+import { VIDEO_PUZZLES } from "./data-video.js?v=20261119a"
 
 export const GENRES = [
   {
